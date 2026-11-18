@@ -52,7 +52,7 @@ button:disabled { cursor: not-allowed; }
   background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px);
   mix-blend-mode: overlay;
 }
-.is-flicker .screen { animation: flicker 0.7s steps(2, end); }
+.screen { animation: flicker 0.7s steps(2, end); }
 @keyframes flicker {
   0% { opacity: 0; filter: brightness(2) hue-rotate(-10deg); }
   20% { opacity: 1; }
@@ -534,3 +534,58 @@ input::placeholder { color: #5d4d4b; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ── notes, practice, coach ─────────────────────────────── */
+.btn--ghost { background: transparent; border-style: dashed; color: var(--gold); border-color: #d9b26a66; }
+.divider { display: flex; align-items: center; gap: 10px; color: #6c5b58; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.gold { color: var(--gold); }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+.notes { display: flex; flex-direction: column; gap: 14px; }
+.notes .panel p { margin: 0 0 10px; }
+.grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+.grid--30 { grid-template-columns: repeat(6, 1fr); }
+.grid__n {
+  aspect-ratio: 1;
+  min-height: 30px;
+  border: 1px solid var(--line);
+  background: #0a0607;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 0;
+  color: var(--text);
+}
+.grid--30 .grid__n { font-size: 15px; }
+.grid__n.is-x { color: #5d4d4b; text-decoration: line-through; background: #120a0b; border-color: #26141780; }
+.grid__n.is-likely { color: #120a0b; background: var(--gold); border-color: var(--gold); font-weight: 700; }
+.grid__n.is-hinted:not(.is-x) { border-color: #ff5a6e88; color: #ff5a6e; }
+.note-row { display: grid; grid-template-columns: 84px 56px 1fr; gap: 6px; align-items: start; margin-bottom: 8px; }
+.note-row__name { font-size: 13px; font-weight: 600; padding-top: 10px; display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.note-row__hint { font-family: var(--mono); font-size: 10px; color: var(--gold); font-weight: 500; }
+.note-row input, .note-row textarea { padding: 9px 10px; font-size: 15px; }
+.note-row__guess { text-align: center; font-family: var(--mono); color: var(--gold); }
+textarea {
+  background: #0a0607; border: 1px solid var(--line); border-radius: 10px;
+  padding: 11px 12px; font: inherit; font-size: 15px; color: inherit; width: 100%;
+  resize: vertical; outline: none;
+}
+textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px #d4122b30; }
+.seg--tabs .seg__btn { font-size: 12px; padding: 10px 4px; letter-spacing: 0.04em; }
+.coachbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px; border: 1px dashed #d9b26a55; border-radius: 12px; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--red); padding: 0; }
+.target__coach { margin-left: 8px; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--gold); }
+.chat { display: flex; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.chat--whisper { background: #d9b26a0d; border-left: 2px solid var(--gold); }
+.chat__who { font-weight: 700; font-size: 14px; }
+.chat__text { font-size: 15px; color: #e3d7d3; }
+.levels { display: grid; gap: 8px; }
+.level { display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #0a0607; }
+.level[aria-checked='true'] { border-color: var(--red); background: #2a070d; box-shadow: 0 0 24px -10px #d4122b inset; }
+.solution { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.solution h3 { margin: 10px 0 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.solution__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.solution__list li { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #0a0607; font-size: 14px; }
+.solution__list li > span:first-child { flex: 1; }
+.solution__list .is-lie { border-color: var(--red-deep); }

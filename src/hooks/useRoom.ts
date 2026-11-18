@@ -76,9 +76,11 @@ export function useRoom(session: Session | null): RoomState {
   return { room, players, visits, clues, me, gone, refresh };
 }
 
-/** Seconds left until `endsAt`; pokes the server clock once the deadline passes. */
-export function useCountdown(endsAt: string | null, roomId: string | undefined) {
+/** Seconds left until `endsAt`; calls `onExpire` repeatedly once the deadline passes. */
+export function useCountdown(endsAt: string | null, onExpire?: () => void) {
   const [now, setNow] = useState(Date.now());
+  const cb = useRef(onExpire);
+  cb.current = onExpire;
   useEffect(() => {
     const t = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(t);
@@ -86,11 +88,11 @@ export function useCountdown(endsAt: string | null, roomId: string | undefined) 
   const left = endsAt ? Math.max(0, Math.ceil((new Date(endsAt).getTime() - now) / 1000)) : 0;
   const expired = !!endsAt && left === 0;
   useEffect(() => {
-    if (!expired || !roomId) return;
-    void api.tick(roomId).catch(() => {});
-    const t = window.setInterval(() => void api.tick(roomId).catch(() => {}), 2500);
+    if (!expired || !cb.current) return;
+    cb.current();
+    const t = window.setInterval(() => cb.current?.(), 2500);
     return () => window.clearInterval(t);
-  }, [expired, roomId]);
+  }, [expired]);
   return left;
 }
 

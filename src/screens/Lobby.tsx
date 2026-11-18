@@ -3,6 +3,7 @@ import { api, type Player, type Room, type Session } from '../lib/api';
 import { MODES, type Mode } from '../lib/rules';
 import { Avatar, Brand, ErrorLine, Modal, Screen } from '../components/ui';
 import { RulesOverview } from '../components/RulesOverview';
+import { Stepper } from '../components/Stepper';
 
 interface Props {
   session: Session;
@@ -208,34 +209,5 @@ export function Lobby({ session, room, players, onLeave }: Props) {
         </Modal>
       )}
     </Screen>
-  );
-}
-
-function Stepper(props: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  suffix?: string;
-  disabled?: boolean;
-  onChange: (v: number) => void;
-}) {
-  const { label, value, min, max, suffix = '', disabled, onChange } = props;
-  return (
-    <div className="stepper">
-      <span>{label}</span>
-      <div className="stepper__ctl">
-        <button aria-label={`Fewer: ${label}`} disabled={disabled || value <= min} onClick={() => onChange(value - 1)}>
-          −
-        </button>
-        <output aria-live="polite">
-          {value}
-          {suffix}
-        </output>
-        <button aria-label={`More: ${label}`} disabled={disabled || value >= max} onClick={() => onChange(value + 1)}>
-          +
-        </button>
-      </div>
-    </div>
   );
 }

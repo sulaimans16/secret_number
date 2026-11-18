@@ -1,25 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
-import { api, type Player, type Room, type Session } from '../lib/api';
+import type { GameActions, GameView } from '../lib/engine';
 import { Avatar, ErrorLine, Screen, Typewriter } from '../components/ui';
+import { Solution } from '../components/Solution';
 
-interface Props {
-  session: Session;
-  room: Room;
-  players: Player[];
-  me: Player;
-  onLeave: () => void;
-}
-
-export function Reveal({ session, room, players, me, onLeave }: Props) {
+export function Reveal({ view, actions }: { view: GameView; actions: GameActions }) {
+  const { room, players, me, isHost } = view;
+  const practice = view.kind === 'practice';
+  const [showSolution, setShowSolution] = useState(false);
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const [shown, setShown] = useState(reduce ? players.length : 0);
   const [guesses, setGuesses] = useState<{ player_id: string; target_player: string; value: number }[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const isHost = room.host_player === session.player_id;
 
   useEffect(() => {
-    api.revealGuesses(room.id).then(setGuesses).catch(() => {});
-  }, [room.id]);
+    actions.revealGuesses().then(setGuesses).catch(() => {});
+  }, [actions, room.id]);
 
   useEffect(() => {
     if (shown >= players.length) return;
@@ -101,17 +96,31 @@ export function Reveal({ session, room, players, me, onLeave }: Props) {
         </section>
       )}
 
+      {done && practice && (
+        <section className="panel">
+          <button className="btn btn--block" onClick={() => setShowSolution((x) => !x)} aria-expanded={showSolution}>
+            {showSolution ? 'Hide solution' : 'Show solution'}
+          </button>
+          {showSolution && <Solution view={view} />}
+        </section>
+      )}
+
       <ErrorLine error={error} />
       {done && (
         <div className="dock">
           {isHost ? (
-            <button className="btn btn--primary btn--block" onClick={() => api.rematch(session).catch((e: Error) => setError(e.message))}>
-              Play again with this group
+            <button className="btn btn--primary btn--block" onClick={() => actions.rematch().catch((e: Error) => setError(e.message))}>
+              {practice ? 'Play again' : 'Play again with this group'}
             </button>
           ) : (
             <p className="waiting">The host can start another round.</p>
           )}
-          <button className="link center" onClick={onLeave}>
+          {practice && (
+            <button className="btn btn--block" onClick={() => actions.changeSettings?.()}>
+              Change settings
+            </button>
+          )}
+          <button className="link center" onClick={() => actions.leave()}>
             Leave
           </button>
         </div>

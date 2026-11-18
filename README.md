@@ -19,8 +19,23 @@ A real-time hidden-number deduction game for friends, inspired by the "Secret Nu
 
 In Devil's Rules, addition results at the extremes are shown as ranges: sums of 20 or less show as `3–20`, and sums of 180 or more show as `180–199`.
 
+## Notes
+Every game has a **Notes** tab, saved on your device only:
+- a **number grid** for your own number: tap once to cross a number out, twice to mark it likely, and a third time to clear it. If only one number is left, it is filled in as your guess.
+- a **suspected number and notes** for each player. Suspected numbers are filled in as your final guesses.
+- **general notes** for alliances, suspicions and lies.
+
+## Practice vs bots (single play)
+Choose **Practice vs bots** on the home screen to play alone in your browser, with no account or network needed. Pick the rule set, the number of bots, the timer and a difficulty:
+- **Easy:** bots visit at random and guess wildly. The **Coach** is on, showing which numbers your clues still allow.
+- **Medium:** bots choose informative visits, share honest clues in chat, and guess when they are close.
+- **Hard:** bots play sharp, discard claims that contradict what they know, and lie in chat about a quarter of the time.
+
+Tap a bot to visit it with a ticket, or to **ask for a clue** for free (they may lie). Turn on **Trust chat claims** to let the coach use what bots say. After the reveal, **Show solution** lists what your clues proved and every lie told in chat.
+
 ## Tech
 - Vite + React + TypeScript frontend (`src/`).
+- Practice mode: a client-side engine and bots (`src/practice/`), with a constraint solver (`solver.ts`) shared by the bots and the coach.
 - Supabase Postgres + Realtime backend (`supabase/migrations/0001_init.sql`). Secret numbers, clue results and guesses sit in tables that browsers cannot read. Every action goes through `SECURITY DEFINER` functions, authenticated by a per-player token.
 
 ## Local development

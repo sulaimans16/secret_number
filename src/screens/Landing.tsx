@@ -6,7 +6,15 @@ import { RulesOverview } from '../components/RulesOverview';
 
 type View = 'home' | 'create' | 'join' | 'rules';
 
-export function Landing({ onSession, initialCode }: { onSession: (s: Session) => void; initialCode?: string }) {
+export function Landing({
+  onSession,
+  onPractice,
+  initialCode,
+}: {
+  onSession: (s: Session) => void;
+  onPractice: () => void;
+  initialCode?: string;
+}) {
   const [view, setView] = useState<View>(initialCode ? 'join' : 'home');
   const [name, setName] = useState(() => {
     try {
@@ -83,6 +91,12 @@ export function Landing({ onSession, initialCode }: { onSession: (s: Session) =>
           </button>
           <button className="btn btn--block" onClick={() => setView('join')}>
             Join a group
+          </button>
+          <div className="divider" aria-hidden>
+            <span>or play alone</span>
+          </div>
+          <button className="btn btn--block btn--ghost" onClick={onPractice}>
+            Practice vs bots
           </button>
           <button className="link center" onClick={() => setView('rules')}>
             How to play

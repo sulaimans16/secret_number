@@ -1,25 +1,23 @@
 import { useState } from 'react';
-import { api, type Clue, type Player, type Room, type Session } from '../lib/api';
+import type { GameActions, GameView } from '../lib/engine';
 import { MODES, TICKETS } from '../lib/rules';
 import { fmtClock, useCountdown } from '../hooks/useRoom';
 import { useNotes } from '../hooks/useNotes';
-import { Avatar, ErrorLine, Screen } from '../components/ui';
+import { Avatar, ErrorLine, Modal, Screen } from '../components/ui';
+import { NotesPanel } from '../components/NotesPanel';
 
-interface Props {
-  session: Session;
-  room: Room;
-  players: Player[];
-  clues: Clue[];
-  me: Player;
-}
-
-export function Guessing({ session, room, players, clues, me }: Props) {
-  const left = useCountdown(room.phase_ends_at, room.id);
-  const { notes } = useNotes(room.id, room.round);
+export function Guessing({ view, actions }: { view: GameView; actions: GameActions }) {
+  const { room, players, clues, me } = view;
+  const left = useCountdown(room.phase_ends_at, actions.tick);
+  const notes = useNotes(room.id, room.round);
   const max = MODES[room.mode].maxNumber;
-  const [vals, setVals] = useState<Record<string, string>>(() =>
-    Object.fromEntries(players.map((p) => [p.id, notes[p.id]?.guess ?? ''])),
-  );
+  const [vals, setVals] = useState<Record<string, string>>(() => {
+    const init = Object.fromEntries(players.map((p) => [p.id, notes.notes[p.id]?.guess ?? '']));
+    const open = Array.from({ length: max }, (_, i) => i + 1).filter((n) => notes.grid[n] !== 'x');
+    if (!init[me.id] && open.length === 1) init[me.id] = String(open[0]);
+    return init;
+  });
+  const [showNotes, setShowNotes] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const order = [me, ...players.filter((p) => p.id !== me.id)];
@@ -36,7 +34,7 @@ export function Guessing({ session, room, players, clues, me }: Props) {
     }
     setBusy(true);
     try {
-      await api.submitGuesses(session, out);
+      await actions.submitGuesses(out);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -71,6 +69,9 @@ export function Guessing({ session, room, players, clues, me }: Props) {
           <span className="eyebrow">Final answers</span>
           <div className={`clock ${left <= 30 ? 'clock--urgent' : ''}`}>{fmtClock(left)}</div>
         </div>
+        <button className="link" onClick={() => setShowNotes(true)}>
+          My notes
+        </button>
       </header>
       <p className="muted">
         Leave a box blank to skip it. A wrong guess for your own number costs <b>5 points</b>, and a skip costs nothing.
@@ -110,6 +111,12 @@ export function Guessing({ session, room, players, clues, me }: Props) {
           Seal my answers
         </button>
       </div>
+      {showNotes && (
+        <Modal label="My notes" onClose={() => setShowNotes(false)}>
+          <h2 className="title title--sm">My notes</h2>
+          <NotesPanel store={notes} players={players} me={me} max={max} />
+        </Modal>
+      )}
     </Screen>
   );
 }
